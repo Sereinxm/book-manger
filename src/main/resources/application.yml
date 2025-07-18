@@ -1,4 +1,9 @@
 spring:
   application:
     name: book-manger
+  profiles:
+    active: dev
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+
 
