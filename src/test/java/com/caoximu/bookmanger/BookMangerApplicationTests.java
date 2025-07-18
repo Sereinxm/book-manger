@@ -1,4 +1,4 @@
-package com.rtiiw.bookmanger;
+package com.caoximu.bookmanger;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
