@@ -1,7 +1,9 @@
 package com.caoximu.bookmanger.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.Version;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -31,7 +33,7 @@ public class Users implements Serializable {
      * 用户ID
      */
     @ApiModelProperty("用户ID")
-    @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "id", type = IdType.ASSIGN_ID)
     private Long id;
 
     /**
@@ -62,7 +64,7 @@ public class Users implements Serializable {
      * 用户角色 (admin, user, super_admin)
      */
     @ApiModelProperty("用户角色 (admin, user, super_admin)")
-    private String role;
+    private String role = "user";
 
     /**
      * 注册时间
@@ -75,6 +77,11 @@ public class Users implements Serializable {
      */
     @ApiModelProperty("账户状态（1:活跃 0:冻结）")
     private Boolean isActive;
+    /**
+     * 密码盐值
+     */
+    @TableField("salt")
+    private String salt;
 
     /**
      * 创建时间
@@ -88,15 +95,4 @@ public class Users implements Serializable {
     @ApiModelProperty("更新时间")
     private LocalDateTime updateTime;
 
-    /**
-     * 逻辑删除标志
-     */
-    @ApiModelProperty("逻辑删除标志")
-    private Boolean deleted;
-
-    /**
-     * 乐观锁版本号
-     */
-    @ApiModelProperty("乐观锁版本号")
-    private Integer version;
 }

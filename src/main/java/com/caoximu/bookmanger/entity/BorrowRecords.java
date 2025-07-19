@@ -3,6 +3,7 @@ package com.caoximu.bookmanger.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.Version;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -103,9 +104,4 @@ public class BorrowRecords implements Serializable {
     @ApiModelProperty("更新时间")
     private LocalDateTime updateTime;
 
-    /**
-     * 乐观锁版本号
-     */
-    @ApiModelProperty("乐观锁版本号")
-    private Integer version;
 }

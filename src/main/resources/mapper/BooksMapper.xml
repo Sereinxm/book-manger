@@ -2,4 +2,56 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.caoximu.bookmanger.mapper.BooksMapper">
 
+    <!-- 图书信息结果映射 -->
+    <resultMap id="BookDtoResultMap" type="com.caoximu.bookmanger.domain.response.BookResponse">
+        <result column="isbn" property="isbn"/>
+        <result column="title" property="title"/>
+        <result column="publisher" property="publisher"/>
+        <result column="publish_year" property="publishYear"/>
+        <result column="description" property="description"/>
+        <result column="author_id" property="authorId"/>
+        <result column="author_name" property="authorName"/>
+    </resultMap>
+
+    <!-- 分页查询图书信息（关联作者信息） -->
+    <select id="selectBooksWithAuthor" resultMap="BookDtoResultMap">
+        SELECT
+        b.isbn,
+        b.title,
+        b.publisher,
+        b.publish_year,
+        b.description,
+        b.author_id,
+        a.name as author_name,
+        b.create_time,
+        b.update_time,
+        COALESCE(copy_stats.available_copies, 0) as available_copies,
+        COALESCE(copy_stats.total_copies, 0) as total_copies
+        FROM books b
+        LEFT JOIN authors a ON b.author_id = a.id AND a.deleted = 0
+        LEFT JOIN (
+        SELECT
+        book_isbn,
+        SUM(IF(status = 'available' AND deleted = 0, 1, 0)) as available_copies,
+        SUM(IF(deleted = 0, 1, 0)) as total_copies
+        FROM book_copies
+        WHERE deleted = 0
+        GROUP BY book_isbn
+        ) copy_stats ON b.isbn = copy_stats.book_isbn
+        WHERE b.deleted = 0
+        <if test="req.isbn != null and req.isbn != ''">
+            AND b.isbn = #{req.isbn}
+        </if>
+        <if test="req.title != null and req.title != ''">
+            AND b.title LIKE CONCAT('%', #{req.title}, '%')
+        </if>
+        <if test="req.publisher != null and req.publisher != ''">
+            AND b.publisher LIKE CONCAT('%', #{req.publisher}, '%')
+        </if>
+        <if test="req.authorName != null and req.authorName != ''">
+            AND a.name LIKE CONCAT('%', #{req.authorName}, '%')
+        </if>
+        ORDER BY b.create_time DESC
+    </select>
+
 </mapper>

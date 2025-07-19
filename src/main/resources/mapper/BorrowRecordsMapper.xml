@@ -2,4 +2,53 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.caoximu.bookmanger.mapper.BorrowRecordsMapper">
 
+    <select id="getBorrowRecords" resultType="com.caoximu.bookmanger.domain.response.BorrowRecordResponse">
+        SELECT
+        br.id,
+        br.user_id AS userId,
+        u.name AS userName,
+        br.copy_id AS copyId,
+        bc.book_isbn AS bookIsbn,
+        b.title AS bookTitle,
+        a.name AS authorName,
+        br.borrow_date AS borrowDate,
+        br.due_date AS dueDate,
+        br.return_date AS returnDate,
+        br.status,
+        br.renewal_count AS renewalCount,
+        br.fine_amount AS fineAmount,
+        br.notes
+        FROM borrow_records br
+        LEFT JOIN users u ON br.user_id = u.id
+        LEFT JOIN book_copies bc ON br.copy_id = bc.copy_id
+        LEFT JOIN books b ON bc.book_isbn = b.isbn
+        LEFT JOIN authors a ON b.author_id = a.id
+        <where>
+            <if test="userId != null">
+                AND br.user_id = #{userId}
+            </if>
+            <if test="status != null and status != ''">
+                AND br.status = #{status}
+            </if>
+        </where>
+        ORDER BY br.create_time DESC
+    </select>
+
+    <select id="getAuthorBorrowStatistics" resultType="com.caoximu.bookmanger.domain.response.AuthorBorrowStatisticsResponse">
+        SELECT b.isbn                                AS bookIsbn,
+               b.title                               AS bookTitle,
+               COUNT(br.id)                          AS totalBorrowCount,
+               SUM(IF(br.status = 'active', 1, 0))   AS currentBorrowCount,
+               SUM(IF(br.status = 'returned', 1, 0)) AS returnedCount,
+               SUM(IF(br.status = 'overdue', 1, 0))  AS overdueCount
+        FROM books b
+                 LEFT JOIN book_copies bc ON b.isbn = bc.book_isbn
+                 LEFT JOIN borrow_records br ON bc.copy_id = br.copy_id
+        WHERE b.author_id = #{authorId}
+          AND b.deleted = false
+          AND (bc.deleted = false OR bc.deleted IS NULL)
+        GROUP BY b.isbn, b.title
+        HAVING COUNT(br.id) > 0
+        ORDER BY totalBorrowCount DESC, b.title
+    </select>
 </mapper>

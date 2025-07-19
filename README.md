@@ -80,8 +80,7 @@
 | 操作         | User | Admin | Super Admin |
 |------------|------|-------|-------------|
 | 查看自身借阅记录   | ✔    | ✔     | ✔           |
-| 借阅可用图书     | ✔    | ✔     | ✔           |
-| 归还自己借阅的书   | ✔    | ✔     | ✔           |
+| 借阅可用图书     | ✘    | ✔     | ✔           |
 | 创建/编辑/删除图书 | ✘    | ✔     | ✔           |
 | 归还他人借阅的图书  | ✘    | ✔     | ✔           |
 | 查看所有用户借阅历史 | ✘    | ✔     | ✔           |
@@ -195,8 +194,6 @@
 | is_active   | TINYINT(1)   | NOT NULL, DEFAULT 1                                             | 账户状态            |
 | create_time | DATETIME     | NOT NULL, DEFAULT CURRENT_TIMESTAMP                             | 创建时间            |
 | update_time | DATETIME     | NOT NULL, DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP | 更新时间            |
-| deleted     | TINYINT(1)   | NOT NULL, DEFAULT 0                                             | 逻辑删除标志          |
-| version     | INT          | NOT NULL, DEFAULT 1                                             | 乐观锁版本号          |
 
 **索引**：
 
@@ -217,7 +214,6 @@
 | create_time  | DATETIME     | NOT NULL, DEFAULT CURRENT_TIMESTAMP                             | 创建时间          |
 | update_time  | DATETIME     | NOT NULL, DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP | 更新时间          |
 | deleted      | TINYINT(1)   | NOT NULL, DEFAULT 0                                             | 逻辑删除标志        |
-| version      | INT          | NOT NULL, DEFAULT 1                                             | 乐观锁版本号        |
 
 ##### 3. 作者表 (authors)
 
@@ -234,7 +230,6 @@
 | create_time | DATETIME     | NOT NULL, DEFAULT CURRENT_TIMESTAMP                             | 创建时间       |
 | update_time | DATETIME     | NOT NULL, DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP | 更新时间       |
 | deleted     | TINYINT(1)   | NOT NULL, DEFAULT 0                                             | 逻辑删除标志     |
-| version     | INT          | NOT NULL, DEFAULT 1                                             | 乐观锁版本号     |
 
 ##### 4. 图书副本表 (book_copies)
 
@@ -250,14 +245,11 @@
 | create_time     | DATETIME     | NOT NULL, DEFAULT CURRENT_TIMESTAMP                             | 创建时间   |
 | update_time     | DATETIME     | NOT NULL, DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP | 更新时间   |
 | deleted         | TINYINT(1)   | NOT NULL, DEFAULT 0                                             | 逻辑删除标志 |
-| version         | INT          | NOT NULL, DEFAULT 1                                             | 乐观锁版本号 |
 
 **副本状态枚举**：
 
 - `available`：可借阅
 - `borrowed`：已借出
-- `damaged`：损坏
-- `lost`：丢失
 
 ##### 5. 借阅记录表 (borrow_records)
 
@@ -278,7 +270,6 @@
 | create_time   | DATETIME      | NOT NULL, DEFAULT CURRENT_TIMESTAMP                             | 创建时间   |
 | update_time   | DATETIME      | NOT NULL, DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP | 更新时间   |
 | deleted       | TINYINT(1)    | NOT NULL, DEFAULT 0                                             | 逻辑删除标志 |
-| version       | INT           | NOT NULL, DEFAULT 1                                             | 乐观锁版本号 |
 
 **借阅状态枚举**：
 
@@ -334,11 +325,8 @@
 
 所有业务表都采用逻辑删除设计，通过`deleted`字段标记删除状态，避免物理删除导致的数据丢失。
 
-#### 2. 乐观锁机制
 
-通过`version`字段实现乐观锁，防止并发更新时的数据冲突。
-
-#### 3. 时间戳追踪
+#### 2. 时间戳追踪
 
 所有表都包含`create_time`和`update_time`字段，自动追踪数据的创建和更新时间。
 
@@ -346,7 +334,7 @@
 
 ### 一、 系统初始化与自举流程
 
-系统在首次启动或关键配置缺失时，将执行自举（Bootstrapping）程序，以确保核心功能的可用性。
+系统在首次启动或关键配置缺失时，将执行自举程序，以确保核心功能的可用性。
 
 #### 1. 默认系统配置注入
 
@@ -457,8 +445,8 @@ sequenceDiagram
 
 系统基于角色进行权限管理（Role-Based Access Control），定义了三种核心角色，并实现了权限的层级继承。
 
-- **`USER` (普通用户)**: 基础权限，可借阅/归还图书、查看自身借阅历史。
-- **`ADMIN` (普通管理员)**: 继承`USER`所有权限，并额外拥有图书管理、副本管理、所有用户借阅记录查询、用户账户状态管理等权限。
+- **`USER` (普通用户)**: 基础权限，查看自身借阅历史。
+- **`ADMIN` (普通管理员)**: 继承`USER`所有权限，管理借阅功能，并额外拥有图书管理、副本管理、所有用户借阅记录查询、用户账户状态管理等权限。
 - **`SUPER_ADMIN` (超级管理员)**: 拥有系统最高权限，继承`ADMIN`所有权限，并可对管理员进行任免、管理管理员账户状态以及配置系统级参数。
 
 ##### 权限层级图
@@ -472,11 +460,12 @@ graph TD
         P2[管理员任免]
         P3[图书管理]
         P4[用户管理]
-        P5[借阅图书]
+        P5[管理图书借阅]
+        P6[常看借阅记录]
     end
     SUPER_ADMIN -- "拥有" --> P1 & P2
-    ADMIN -- "拥有" --> P3 & P4
-    USER -- "拥有" --> P5
+    ADMIN -- "拥有" --> P3 & P4 & P5
+    USER -- "拥有" --> P6
 ```
 
 ### 四、 图书核心业务流程

@@ -1,7 +1,16 @@
 package com.caoximu.bookmanger.service;
 
-import com.caoximu.bookmanger.entity.Users;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.caoximu.bookmanger.domain.request.AuthorAuthRequest;
+import com.caoximu.bookmanger.domain.request.LoginRequest;
+import com.caoximu.bookmanger.domain.request.RegisterRequest;
+import com.caoximu.bookmanger.domain.request.UpdateUserProfileRequest;
+import com.caoximu.bookmanger.domain.request.UpdateUserRoleRequest;
+import com.caoximu.bookmanger.domain.request.UserQueryRequest;
+import com.caoximu.bookmanger.domain.response.AuthResponse;
+import com.caoximu.bookmanger.domain.response.UserResponse;
+import com.caoximu.bookmanger.entity.Users;
 
 /**
  * <p>
@@ -13,4 +22,24 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IUsersService extends IService<Users> {
 
+    AuthResponse login(LoginRequest request);
+
+    AuthResponse register(RegisterRequest request);
+
+    void authorAuth(AuthorAuthRequest req);
+
+    /**
+     * 分页查询用户列表
+     */
+    IPage<UserResponse> getUserList(UserQueryRequest request);
+
+    /**
+     * 更新用户角色和状态
+     */
+    void updateUserRole(UpdateUserRoleRequest request);
+
+    /**
+     * 用户更新个人信息
+     */
+    void updateUserProfile(UpdateUserProfileRequest request);
 }

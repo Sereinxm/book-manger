@@ -1,5 +1,8 @@
 package com.caoximu.bookmanger.controller;
 
+import com.caoximu.bookmanger.service.IAuthorsService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,6 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/authors")
+@RequiredArgsConstructor
 public class AuthorsController {
+
+    private final IAuthorsService authorsService;
+
+
 
 }

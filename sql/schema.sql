@@ -19,13 +19,12 @@ CREATE TABLE `users` (
                          `email` VARCHAR(255) NOT NULL COMMENT '邮箱地址',
                          `google_id` VARCHAR(255) NULL COMMENT 'Google OAuth ID',
                          `password` VARCHAR(255) NULL COMMENT '密码',
+                         `salt` VARCHAR(255) NULL COMMENT '密码盐值',
                          `role` VARCHAR(64) NOT NULL DEFAULT 'user' COMMENT '用户角色 (admin, user, super_admin)',
                          `join_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '注册时间',
                          `is_active` TINYINT(1) NOT NULL DEFAULT 1 COMMENT '账户状态（1:活跃 0:冻结）',
                          `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
                          `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-                         `deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '逻辑删除标志',
-                         `version` INT NOT NULL DEFAULT 1 COMMENT '乐观锁版本号',
                          PRIMARY KEY (`id`),
                          UNIQUE KEY `uk_email` (`email`),
                          UNIQUE KEY `uk_google_id` (`google_id`)
@@ -44,7 +43,6 @@ CREATE TABLE `books` (
                          `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
                          `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
                          `deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '逻辑删除标志',
-                         `version` INT NOT NULL DEFAULT 1 COMMENT '乐观锁版本号',
                          PRIMARY KEY (`isbn`)
 ) COMMENT='图书表';
 
@@ -61,7 +59,6 @@ CREATE TABLE `authors` (
                            `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
                            `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
                            `deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '逻辑删除标志',
-                           `version` INT NOT NULL DEFAULT 1 COMMENT '乐观锁版本号',
                            PRIMARY KEY (`id`)
 ) COMMENT='作者表';
 
@@ -77,7 +74,6 @@ CREATE TABLE `book_copies` (
                                `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
                                `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
                                `deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '逻辑删除标志',
-                               `version` INT NOT NULL DEFAULT 1 COMMENT '乐观锁版本号',
                                PRIMARY KEY (`copy_id`)
 ) COMMENT='图书副本表';
 
@@ -97,7 +93,6 @@ CREATE TABLE `borrow_records` (
                                   `notes` TEXT NULL COMMENT '备注信息',
                                   `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
                                   `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-                                  `version` INT NOT NULL DEFAULT 1 COMMENT '乐观锁版本号',
                                   PRIMARY KEY (`id`)
 ) COMMENT='借阅记录表';
 

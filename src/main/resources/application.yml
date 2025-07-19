@@ -28,3 +28,50 @@ knife4j:
   enable: true
   setting:
     language: zh_cn
+
+# Google OAuth2 配置
+google:
+  oauth2:
+    client-id: ${GOOGLE_CLIENT_ID:your-google-client-id}
+    client-secret: ${GOOGLE_CLIENT_SECRET:your-google-client-secret}
+    redirect-uri: ${GOOGLE_REDIRECT_URI:http://localhost:18886/auth/google/callback}
+system:
+  signature-key:
+    public-key: |
+      -----BEGIN PUBLIC KEY-----
+      MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAl9egxbiu4UJvIUUIHNm9
+      Lt6s1yR0cRampGQDb4c+FGcdImuTzyrecT2CWsqXZQ4ZBIFTlKItGFleJ7qveFkT
+      i4Ud76/2INkcrQoUYu47uKeAJAmXjujOgCIh+QpV1lD44zGp6ZAJ6quq9dlNpCV4
+      /GQT9hkIYyvpS6SbIS1/lj1wijYkSF9dghghzj4xXPeEE7khRFxr4niFY2UTmKji
+      nMNhkfmnpvidaz2UjqKpSeOpPste1+gjnp5CnfXvvLWi669qIrRIjBSk0JAbryq9
+      C13IpxV6yrXjxPSXXQQ3ASMl3XA2fiVMunVko2lo+ztqSQU7tyCkB8bVhuhBMGUW
+      NwIDAQAB
+      -----END PUBLIC KEY-----
+    private-key: |
+      -----BEGIN RSA PRIVATE KEY-----
+      MIIEowIBAAKCAQEAl9egxbiu4UJvIUUIHNm9Lt6s1yR0cRampGQDb4c+FGcdImuT
+      zyrecT2CWsqXZQ4ZBIFTlKItGFleJ7qveFkTi4Ud76/2INkcrQoUYu47uKeAJAmX
+      jujOgCIh+QpV1lD44zGp6ZAJ6quq9dlNpCV4/GQT9hkIYyvpS6SbIS1/lj1wijYk
+      SF9dghghzj4xXPeEE7khRFxr4niFY2UTmKjinMNhkfmnpvidaz2UjqKpSeOpPste
+      1+gjnp5CnfXvvLWi669qIrRIjBSk0JAbryq9C13IpxV6yrXjxPSXXQQ3ASMl3XA2
+      fiVMunVko2lo+ztqSQU7tyCkB8bVhuhBMGUWNwIDAQABAoIBAAYqG5LWDp4tOPRx
+      fa9+Ki9kRuwXxMpv5aVi52jNus16lN+Nh9tZ8tycvKq8SC0yx1KRgDfWkFzJXrM0
+      4bl8aaNjwiALABkRTMK8WAY0LySDWFvI2pL+DJ7TGUH9E223V9i8GW6BXzBcdn0I
+      rMhEj9w0oULVKAFZX7KnJM0nWw4EXIJ5x8Vg5+IjtSvGW+HERhyFSqQfwu8L0PeG
+      +mgzqwxVdaQ1DDcd6l/zb+mO6xV6RQfGVhnxY6gCLEIFPJZPqZagOMTpfUFdsBdw
+      qMt5UKIXVLh/ohodTl9lGvI25BwP8TPoV9cwNDdl4QLKOidsMnX3NuzBXTdAgMAo
+      w6jYaBECgYEAu25YILSFxJVcw5hDGfcb8W0zbWAfl1T9UrZhd6tA2LjeT6A/2RBX
+      GxIgsV5G2QbRb9Ms4dsnp2b4Cey9uOV/7uAcxFp0qrbjuTCSNzrn9FLfU0vtN2Q+
+      LfFaS3/me2sZjsMuhMhalDukhEMjwyr8+fJ8fJg8RySMBlQ1FNRaZEsCgYEAz2RC
+      HpldjJKVltYAgzZgPCvvjq4PopIXc8gGLmI0uy9YBOQPl2iQC/NVedUQxFtxr7LA
+      fyQvflP0ESknagHXfCXTfdbppaPm0l8yqRuaVK01QXrPfm/0KuL7w01Bjun/VW7o
+      G9mUgwmNCV0zyfXc4vLBv9RDryAhNy0qf8jjakUCgYAHIfXcmMIWbxCuqNa04ECB
+      +YPhf6z0F1nkkeg3o56+IJrlMNX9LrAB6biwx0Ou8qF5vfGRTsO9jR+XURkPNjye
+      HI07s62I6ZjU7VJDI8y78YNqKhOG7hunp+2lveJJhBPe6PKWPwGjbnmeRufPf41M
+      /btbCngQxQVHIGE8v7AI7QKBgQCDfo0Ru6n95D8miP+AMmzoGe9lJuXQ7RIjnhKV
+      PD005frH9xYPqQOUIC/09GwSI+y8OvkkY/wc+/wHGXHdG9fV5mHnKumv1XEXt7Z2
+      VIMQ51WZ89U11KQawRpiJUzI4YK8V3qhld49C0Q6SLb6eYIY/1RrXZmgox2MT33f
+      0a6nhQKBgBYiXhzNoZoYe4bkjlGLM5S2SczfHpCwaW1ZhDJPtXuKbUT690fe2YBy
+      NUKkuDoBLvFEd9EmxFmHoHnpVaGyYDADiF5vaB0s5TAPAqaYCbnBSjP9pY/oS0wy
+      j6y4qbjNloDgd07dkJt/J6LGCmjDLiSwh8vdhftC+pCE/0COhcDd
+      -----END RSA PRIVATE KEY-----
