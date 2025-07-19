@@ -3,3 +3,11 @@ spring:
     url: jdbc:mysql://192.168.1.177:7567/book_manger?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&autoReconnect=true&rewriteBatchedStatements=true
     username: root
     password: mysql1.177
+  data:
+    redis:
+      database: 0
+      host: 192.168.1.177
+      port: 6379
+      password: redis1177
+      timeout: 5s
+      connect-timeout: 5s
