@@ -56,6 +56,17 @@
 - **系统设计**：微服务设计思想 + AOP切面编程 + 设计模式应用
 - **部署运维**：Maven构建 + 配置文件分环境管理
 
+## 特别说明
+服务已部署到公网服务器，可以通过地址访问swagger接口文档：http://120.79.250.74:18886/api/doc.html
+
+超级管理员登录账户密码
+```json
+{
+  "email": "admin@system.com",
+  "password": "D/ual88ZF0fzFpy3U/sDq7E/tDy2z65imTyVqDpMDsf9L+jEAO03juj1Cj0PZvVHWkm3TwOq9qUTVfBmbIQNeTxNhbgI+F72+RcsxCXaZr97UkoWWlOrC/o747KYz74EslAqToj/xd/MzZDP4GsZmaUxCEC2hGSrnU/OEa3i4X3qToYmLCEAg1Aa5D8tXslP58azssmC7ERHVVD57vM/ANqxL6NZSoxlAOi5X4DtDiRWksXd+41wyd/DDTCW/1zgjeicUbuvpOSq/KEpH0jPcD2sl3zZlQ0tA9tVqC1zpB4WkVZjzBBrJxkCF2XPOjGADg7AWl85R0nmaSAz+n+PuA=="
+}
+```
+
 ## 需求分析
 
 #### 一、实体分析
