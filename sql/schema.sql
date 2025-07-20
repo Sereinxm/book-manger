@@ -33,18 +33,22 @@ CREATE TABLE `users` (
 -- ===========================================
 -- 图书表 (books)
 -- ===========================================
-CREATE TABLE `books` (
-                         `isbn` VARCHAR(20) NOT NULL COMMENT 'ISBN码（国际标准书号）',
-                         `title` VARCHAR(500) NOT NULL COMMENT '书名',
-                         `publisher` VARCHAR(200) NOT NULL COMMENT '出版社',
-                         `publish_year` YEAR NOT NULL COMMENT '出版年份',
-                         `description` TEXT NULL COMMENT '图书描述',
-                         `author_id` BIGINT NOT NULL COMMENT '作者ID',
-                         `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-                         `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-                         `deleted` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '逻辑删除标志',
-                         PRIMARY KEY (`isbn`)
-) COMMENT='图书表';
+create table books
+(
+    isbn         varchar(20)                          not null comment 'ISBN码（国际标准书号）',
+    title        varchar(500)                         not null comment '书名',
+    publisher    varchar(200)                         not null comment '出版社',
+    publish_year date                                 not null comment '出版年份',
+    description  text                                 null comment '图书描述',
+    author_id    bigint                               not null comment '作者ID',
+    create_time  datetime   default CURRENT_TIMESTAMP not null comment '创建时间',
+    update_time  datetime   default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    deleted      tinyint(1) default 0                 not null comment '逻辑删除标志',
+    version      int        default 1                 not null comment '乐观锁版本号',
+    id           bigint auto_increment
+        primary key
+)
+    comment '图书表';
 
 -- ===========================================
 -- 作者表 (authors)
