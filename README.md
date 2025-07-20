@@ -368,24 +368,6 @@
 - `NUMBER`：数值类型
 - `BOOLEAN`：布尔类型
 
-##### 7. 操作日志表 (operation_logs)
-
-记录系统关键操作的审计日志。
-
-| 字段名             | 类型           | 约束                                  | 说明       |
-|-----------------|--------------|-------------------------------------|----------|
-| id              | BIGINT       | PRIMARY KEY, AUTO_INCREMENT         | 日志ID     |
-| user_id         | BIGINT       | NULL                                | 操作用户ID   |
-| operation_type  | VARCHAR(50)  | NOT NULL                            | 操作类型     |
-| operation_desc  | VARCHAR(500) | NOT NULL                            | 操作描述     |
-| target_type     | VARCHAR(50)  | NULL                                | 目标类型     |
-| target_id       | VARCHAR(100) | NULL                                | 目标ID     |
-| ip_address      | VARCHAR(45)  | NULL                                | IP地址     |
-| user_agent      | VARCHAR(500) | NULL                                | 用户代理     |
-| request_params  | TEXT         | NULL                                | 请求参数     |
-| response_result | TEXT         | NULL                                | 响应结果     |
-| execution_time  | INT          | NULL                                | 执行时间(ms) |
-| create_time     | DATETIME     | NOT NULL, DEFAULT CURRENT_TIMESTAMP | 创建时间     |
 
 ### 数据库设计特点
 

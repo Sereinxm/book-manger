@@ -117,32 +117,6 @@ CREATE TABLE `system_configs` (
                                   UNIQUE KEY `uk_config_key` (`config_key`)
 ) COMMENT='系统配置表';
 
--- ===========================================
--- 操作日志表 (operation_logs)
--- ===========================================
-CREATE TABLE `operation_logs` (
-                                  `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '日志ID',
-                                  `user_id` BIGINT NULL COMMENT '操作用户ID',
-                                  `operation_type` VARCHAR(50) NOT NULL COMMENT '操作类型',
-                                  `operation_desc` VARCHAR(500) NOT NULL COMMENT '操作描述',
-                                  `target_type` VARCHAR(50) NULL COMMENT '目标类型',
-                                  `target_id` VARCHAR(100) NULL COMMENT '目标ID',
-                                  `ip_address` VARCHAR(45) NULL COMMENT 'IP地址',
-                                  `user_agent` VARCHAR(500) NULL COMMENT '用户代理',
-                                  `request_params` TEXT NULL COMMENT '请求参数',
-                                  `response_result` TEXT NULL COMMENT '响应结果',
-                                  `execution_time` INT NULL COMMENT '执行时间(ms)',
-                                  `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-                                  PRIMARY KEY (`id`)
-) COMMENT='操作日志表';
-
--- 在users表中添加Google相关字段
-ALTER TABLE users ADD COLUMN google_id VARCHAR(255) NULL;
-ALTER TABLE users ADD COLUMN avatar VARCHAR(500) NULL;
-ALTER TABLE users ADD COLUMN email_verified BOOLEAN DEFAULT FALSE;
-
--- 为google_id添加索引
-CREATE INDEX idx_users_google_id ON users(google_id);
 
 
 
