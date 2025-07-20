@@ -402,10 +402,10 @@ sequenceDiagram
 
 #### 2. Google OAuth 2.0 认证流程
 
-为了提供便捷的社交登录选项，系统集成了Google的OAuth 2.0认证服务。该流程遵循标准的授权码模式（Authorization Code Flow）。
+为了提供便捷登录选项，系统集成了Google的OAuth 2.0认证服务。该流程遵循标准的授权码模式（Authorization Code Flow）。
 
 - **步骤1：前端发起授权请求**
-  用户在客户端点击“使用Google登录”按钮。客户端将用户重定向至Google的OAuth 2.0授权端点，并携带客户端ID、回调URI (`redirect_uri`)、所需权限范围 (`scope`)等参数。
+  用户在客户端点击“Google登录”按钮。客户端将用户重定向至Google的OAuth 2.0授权端点，并携带客户端ID、回调URI (`redirect_uri`)、所需权限范围 (`scope`)等参数。
 
 - **步骤2：用户授权**
   用户在Google登录并同意授权。Google服务器将用户重定向回应用指定的`redirect_uri`，并在URL中附带一个一次性的授权码(`authorization_code`)。
@@ -418,8 +418,8 @@ sequenceDiagram
 
 - **步骤5：用户同步与登录**
   从验证通过的`id_token`中解析出用户的Google ID、邮箱等信息。
-  - **若用户已存在**（通过`google_id`或`email`匹配）：直接为其生成系统内部的JWT，完成登录。
-  - **若用户不存在**：使用Google提供的信息自动为其创建新账户，然后生成JWT，完成注册并登录。
+  - **若用户已存在**（通过`google_id`或`email`匹配）：直接为其生成系统内部的token，完成登录。
+  - **若用户不存在**：使用Google提供的信息自动为其创建新账户，然后生成toke，完成注册并登录。
 
 ##### 流程图
 ```mermaid
@@ -437,8 +437,8 @@ sequenceDiagram
     S->>S: 6. 验证 id_token (签名, iss, aud, exp)
     S->>DB: 7. 查询或创建用户 (Find/Create User by google_id)
     DB-->>S: 8. 返回用户信息
-    S->>S: 9. 生成系统JWT (Generate App JWT)
-    S-->>C: 10. 返回JWT，登录成功
+    S->>S: 9. 生成系统token (Generate App toke)
+    S-->>C: 10. 返回token，登录成功
 ```
 
 ### 三、 角色与权限控制 (RBAC)
@@ -461,7 +461,7 @@ graph TD
         P3[图书管理]
         P4[用户管理]
         P5[管理图书借阅]
-        P6[常看借阅记录]
+        P6[查看借阅记录]
     end
     SUPER_ADMIN -- "拥有" --> P1 & P2
     ADMIN -- "拥有" --> P3 & P4 & P5
@@ -482,7 +482,7 @@ graph TD
 ##### 借阅流程图
 ```mermaid
 graph TD
-    A[用户发起借阅请求] --> B{检查用户借阅量是否达上限};
+    A[管理员登记借阅] --> B{检查用户借阅量是否达上限};
     B -- 未达上限 --> C{查询图书是否有 'available' 状态的副本};
     B -- 已达上限 --> H[拒绝请求: 超出最大借阅量];
     C -- 有可用副本 --> D[创建借阅记录 BorrowRecord];
@@ -495,7 +495,7 @@ graph TD
 ##### 归还流程图
 ```mermaid
 graph TD
-    A[用户/管理员发起归还请求] --> B[查询对应的借阅记录];
+    A[管理员发起归还请求] --> B[查询对应的借阅记录];
     B --> C{检查是否逾期 return_date > due_date};
     C -- 是 --> D[计算逾期罚金 fine_amount];
     C -- 否 --> E;

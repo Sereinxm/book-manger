@@ -1,6 +1,7 @@
 package com.caoximu.bookmanger.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.caoximu.bookmanger.domain.response.BookResponse;
 import com.caoximu.bookmanger.domain.request.BookQueryRequest;
@@ -27,4 +28,11 @@ public interface BooksMapper extends BaseMapper<Books> {
      * @return 图书信息列表
      */
     Page<BookResponse> selectBooksWithAuthor(@Param("page") Page<BookResponse> page, @Param("req") BookQueryRequest request);
+
+    default Books getByIsbn(String isbn){
+        return selectOne(Wrappers.<Books>lambdaQuery()
+                .eq(Books::getIsbn, isbn)
+                .eq(Books::getDeleted, false)
+        );
+    }
 }

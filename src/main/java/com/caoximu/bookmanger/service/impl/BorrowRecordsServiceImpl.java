@@ -12,6 +12,7 @@ import com.caoximu.bookmanger.entity.enums.BookCopyStatus;
 import com.caoximu.bookmanger.entity.enums.BorrowStatus;
 import com.caoximu.bookmanger.entity.enums.SystemConfigType;
 import com.caoximu.bookmanger.exception.BizException;
+import com.caoximu.bookmanger.mapper.BooksMapper;
 import com.caoximu.bookmanger.mapper.BorrowRecordsMapper;
 import com.caoximu.bookmanger.service.*;
 
@@ -50,6 +51,8 @@ public class BorrowRecordsServiceImpl extends ServiceImpl<BorrowRecordsMapper, B
 
     @Resource
     private ISystemConfigsService systemConfigsService;
+    @Resource
+    private BooksMapper booksMapper;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -66,7 +69,7 @@ public class BorrowRecordsServiceImpl extends ServiceImpl<BorrowRecordsMapper, B
         }
 
         // 3. 查询图书是否存在
-        Books book = booksService.getById(request.getIsbn());
+        Books book = booksMapper.getByIsbn(request.getIsbn());
         if (book == null || Boolean.TRUE.equals(book.getDeleted())) {
             throw new BizException("图书不存在或已删除，ISBN: " + request.getIsbn());
         }

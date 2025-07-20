@@ -29,8 +29,4 @@ public class UpdateBookCopyRequest {
     @Size(max = 1000, message = "状态备注长度不能超过1000个字符")
     @ApiModelProperty("状态备注")
     private String conditionNotes;
-
-    @NotNull(message = "版本号不能为空")
-    @ApiModelProperty(value = "版本号（用于乐观锁）", required = true)
-    private Integer version;
 } 

@@ -3,6 +3,8 @@ package com.caoximu.bookmanger.controller;
 import com.caoximu.bookmanger.common.R;
 import com.caoximu.bookmanger.config.properties.RateLimitProperties;
 import com.google.common.util.concurrent.RateLimiter;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @RestController
 @RequestMapping("/limit")
+@Api(tags = "限流控制器")
 @RequiredArgsConstructor
 public class LimitController {
     
@@ -34,9 +37,7 @@ public class LimitController {
     private final RateLimitProperties rateLimitProperties;
     private final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    /**
-     * 测试局部限流（原有功能）
-     */
+    @ApiOperation("测试局部限流")
     @GetMapping("/test-local")
     public R<String> testLocalLimiter() {
         // 500毫秒内，没拿到令牌，就直接进入服务降级
@@ -54,6 +55,7 @@ public class LimitController {
     /**
      * 测试全局限流效果
      */
+    @ApiOperation("测试全局限流效果")
     @GetMapping("/test-global")
     public R<String> testGlobalLimiter() {
         // 这个接口会被全局限流过滤器拦截
@@ -64,6 +66,7 @@ public class LimitController {
     /**
      * 获取当前限流配置信息
      */
+    @ApiOperation("获取限流配置信息")
     @GetMapping("/config")
     public R<Map<String, Object>> getRateLimitConfig() {
         Map<String, Object> config = new HashMap<>();
@@ -81,6 +84,7 @@ public class LimitController {
     /**
      * 压力测试接口
      */
+    @ApiOperation("压力测试接口")
     @GetMapping("/stress-test")
     public R<String> stressTest() {
         log.info("压力测试接口被调用，时间: {}", LocalDateTime.now().format(dtf));

@@ -7,7 +7,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
@@ -20,6 +23,19 @@ public class GlobalExceptionHandler {
         String message = e.getMessage();
         log.error("业务处理异常, 异常消息:{}, 异常code:{}, 异常msgCode:{}", new Object[]{message, e.getCode(), e.getMsgCode(), e});
         return R.fail(e.getCode(), message, e.getMsgCode(), e.getMsgParams());
+    }
+    //    参数校验异常
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public R validationException(MethodArgumentNotValidException e) {
+
+        String msg = e.getBindingResult().getFieldErrors()
+                .stream()
+                .map(n -> String.format("%s: %s", n.getField(), 		      n.getDefaultMessage()))
+                .reduce((x, y) -> String.format("%s; %s", x, y))
+                .orElse("参数输入有误");
+        log.error("BindException异常，参数校验异常：{}", msg);
+        return R.fail(msg);
     }
 
     @ExceptionHandler({MethodArgumentTypeMismatchException.class})

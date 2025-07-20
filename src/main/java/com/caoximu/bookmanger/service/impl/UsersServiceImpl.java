@@ -149,9 +149,6 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
         
         // 更新用户信息
         user.setRole(request.getRole());
-        if (Objects.nonNull(request.getIsActive())) {
-            user.setIsActive(request.getIsActive());
-        }
         
         this.updateById(user);
     }

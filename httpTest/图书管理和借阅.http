@@ -1,0 +1,391 @@
+@baseUrl = http://localhost:18886/api
+@passwd=D/ual88ZF0fzFpy3U/sDq7E/tDy2z65imTyVqDpMDsf9L+jEAO03juj1Cj0PZvVHWkm3TwOq9qUTVfBmbIQNeTxNhbgI+F72+RcsxCXaZr97UkoWWlOrC/o747KYz74EslAqToj/xd/MzZDP4GsZmaUxCEC2hGSrnU/OEa3i4X3qToYmLCEAg1Aa5D8tXslP58azssmC7ERHVVD57vM/ANqxL6NZSoxlAOi5X4DtDiRWksXd+41wyd/DDTCW/1zgjeicUbuvpOSq/KEpH0jPcD2sl3zZlQ0tA9tVqC1zpB4WkVZjzBBrJxkCF2XPOjGADg7AWl85R0nmaSAz+n+PuA==
+
+### 1.2 普通用户登录
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "testuser@example.com",
+  "password": "{{passwd}}"
+}
+
+### 1.3 管理员登录
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@system.com",
+  "password": "{{passwd}}"
+}
+
+### 3.1 添加图书 (需要管理员权限)
+POST {{baseUrl}}/books/admin/add
+Content-Type: application/json
+
+
+{
+  "isbn": "22651565616",
+  "title": "删除图书",
+  "publisher": "人民邮电出版社",
+  "publishYear": "2022-01-01",
+  "description": "删除图书经典教材，适合初学者和进阶开发者",
+  "authorId": 2,
+  "initialCopies": 5,
+  "location": "A区1楼"
+}
+
+### 3.2 更新图书信息 (需要管理员权限)
+PUT {{baseUrl}}/books/admin/151561651849
+Content-Type: application/json
+
+
+{
+  "title": "LangChain4J编程思想(第五版)",
+  "publisher": "人民邮电出版社",
+  "publishYear": "2023-01-01",
+  "description": "LangChain4J编程经典教材最新版本",
+  "authorId": 2
+}
+
+
+### 3.3 删除图书 (需要管理员权限)
+DELETE {{baseUrl}}/books/admin/22651565616
+Content-Type: application/json
+
+
+### 3.4 根据ISBN获取图书详情
+GET {{baseUrl}}/books/22651565616?includeCopies=true
+
+### 3.5 分页查询图书 - 无条件查询
+GET {{baseUrl}}/books/search?current=1&size=10
+
+### 3.6 分页查询图书 - 按书名查询
+GET {{baseUrl}}/books/search?title=Java&current=1&size=5
+
+### 3.7 分页查询图书 - 按ISBN精确查询
+GET {{baseUrl}}/books/search?isbn=9787115123456&current=1&size=10
+
+### 3.8 分页查询图书 - 按出版社查询
+GET {{baseUrl}}/books/search?publisher=人民邮电&current=1&size=10
+
+### 3.9 分页查询图书 - 按作者查询
+GET {{baseUrl}}/books/search?authorName=张三&current=1&size=10
+
+### 3.10 分页查询图书 - 按发布年份查询
+GET {{baseUrl}}/books/search?publishYear=2022&current=1&size=10
+
+### 3.11 分页查询图书 - 组合查询（书名+出版社）
+GET {{baseUrl}}/books/search?title=Java&publisher=人民邮电&current=1&size=10
+
+
+### 3.13 根据ISBN获取图书详情 - 不包含副本信息
+GET {{baseUrl}}/books/9787115123456?includeCopies=false
+
+### 3.14 根据ISBN获取图书详情 - 默认包含副本信息
+GET {{baseUrl}}/books/9787115123456
+
+###############################################################################
+# 3.15-3.30 图书管理参数校验测试
+###############################################################################
+
+### 3.15 添加图书 - 缺少必填字段ISBN
+POST {{baseUrl}}/books/admin/add
+Content-Type: application/json
+
+
+{
+  "title": "缺少ISBN的图书",
+  "publisher": "测试出版社",
+  "publishYear": "2023-01-01",
+  "authorId": 1,
+  "initialCopies": 1,
+  "location": "测试区域"
+}
+
+### 3.16 添加图书 - 缺少必填字段标题
+POST {{baseUrl}}/books/admin/add
+Content-Type: application/json
+
+
+{
+  "isbn": "9787115000001",
+  "publisher": "测试出版社",
+  "publishYear": "2023-01-01",
+  "authorId": 1,
+  "initialCopies": 1,
+  "location": "测试区域"
+}
+
+
+### 3.18 添加图书 - 负数初始副本数
+POST {{baseUrl}}/books/admin/add
+Content-Type: application/json
+
+
+{
+  "isbn": "9787115000002",
+  "title": "负数副本数测试",
+  "publisher": "测试出版社",
+  "publishYear": "2023-01-01",
+  "authorId": 1,
+  "initialCopies": -1,
+  "location": "测试区域"
+}
+
+### 3.19 添加图书 - 不存在的作者ID
+POST {{baseUrl}}/books/admin/add
+Content-Type: application/json
+
+
+{
+  "isbn": "9787115000003",
+  "title": "不存在作者ID测试",
+  "publisher": "测试出版社",
+  "publishYear": "2023-01-01",
+  "authorId": 99999,
+  "initialCopies": 1,
+  "location": "测试区域"
+}
+
+
+### 3.21 添加图书 - 重复的ISBN
+POST {{baseUrl}}/books/admin/add
+Content-Type: application/json
+
+
+{
+  "isbn": "9787115123456",
+  "title": "重复ISBN测试图书",
+  "publisher": "测试出版社",
+  "publishYear": "2023-01-01",
+  "authorId": 1,
+  "initialCopies": 1,
+  "location": "测试区域"
+}
+
+###############################################################################
+# 3.22-3.30 图书管理权限测试
+###############################################################################
+
+### 3.22 添加图书 - 未登录状态
+POST {{baseUrl}}/books/admin/add
+Content-Type: application/json
+
+{
+  "isbn": "9787115000005",
+  "title": "未登录测试图书",
+  "publisher": "测试出版社",
+  "publishYear": "2023-01-01",
+  "authorId": 1,
+  "initialCopies": 1,
+  "location": "测试区域"
+}
+
+### 3.23 更新图书 - 不存在的ISBN
+PUT {{baseUrl}}/books/admin/9999999999999
+Content-Type: application/json
+
+
+{
+  "title": "不存在图书更新测试",
+  "publisher": "测试出版社",
+  "publishYear": "2023-01-01",
+  "description": "测试更新不存在的图书"
+}
+
+### 3.24 删除图书 - 不存在的ISBN
+DELETE {{baseUrl}}/books/admin/9999999999999
+
+
+### 3.25 查询图书详情 - 不存在的ISBN
+GET {{baseUrl}}/books/9999999999999
+
+### 3.26 查询图书详情 - 无效的ISBN格式
+GET {{baseUrl}}/books/invalid-isbn-format
+
+
+###############################################################################
+# 4. 图书副本管理测试 (BookCopiesController)
+###############################################################################
+
+### 4.1 为图书添加副本 (需要管理员权限)
+POST {{baseUrl}}/bookCopies/admin/9787115123456/add
+Content-Type: application/json
+
+
+{
+  "count": 3,
+  "location": "B区2楼",
+  "conditionNotes": "全新图书，状态良好"
+}
+
+### 4.2 更新副本信息 (需要管理员权限)
+PUT {{baseUrl}}/bookCopies/admin/1
+Content-Type: application/json
+
+
+{
+  "status": "DAMAGED"
+}
+
+### 4.3 根据ISBN获取所有副本
+GET {{baseUrl}}/bookCopies/isbn/9787115123456
+
+###############################################################################
+# 5. 借阅记录管理测试 (BorrowRecordsController)
+###############################################################################
+
+### 5.1 借阅图书 (需要管理员权限)
+POST {{baseUrl}}/borrowRecords/borrow
+Content-Type: application/json
+
+
+{
+  "isbn": "151561651849",
+  "userId": 2,
+  "notes": "学习用书"
+}
+
+### 5.2 归还图书 (需要管理员权限)
+POST {{baseUrl}}/borrowRecords/return
+Content-Type: application/json
+
+
+{
+  "borrowRecordId": 1,
+  "notes": "图书状态良好"
+}
+
+### 5.3 获取当前用户借阅记录
+GET {{baseUrl}}/borrowRecords/my?current=1&size=10
+
+
+### 5.4 获取当前用户指定状态的借阅记录
+GET {{baseUrl}}/borrowRecords/my?current=1&size=10&status=active
+
+
+### 5.5 获取所有借阅记录 (需要管理员权限)
+GET {{baseUrl}}/borrowRecords/admin/all?current=1&size=10
+
+
+### 5.6 获取指定用户的借阅记录 (需要管理员权限)
+GET {{baseUrl}}/borrowRecords/admin/all?current=1&size=10&userId=2
+
+
+### 5.7 获取指定状态的借阅记录 (需要管理员权限)
+GET {{baseUrl}}/borrowRecords/admin/all?current=1&size=10&status=returned
+
+
+### 5.8 获取作者图书借阅统计 (需要作者权限)
+GET {{baseUrl}}/borrowRecords/author/statistics
+
+
+###############################################################################
+# 6. 系统配置管理测试 (SystemConfigsController)
+###############################################################################
+
+### 6.1 获取系统所有配置参数 (需要管理员权限)
+GET {{baseUrl}}/systemConfigs/list
+
+
+### 6.2 修改系统配置参数 (需要管理员权限)
+PUT {{baseUrl}}/systemConfigs/update
+Content-Type: application/json
+
+
+{
+  "configKey": "max_borrow_count",
+  "configValue": "30"
+}
+
+
+
+###############################################################################
+# 9. 业务流程测试场景
+###############################################################################
+
+### 9.1 完整的图书管理流程测试
+# Step 1: 管理员登录
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@system.com",
+  "password": "{{passwd}}"
+}
+
+### Step 2: 添加图书
+POST {{baseUrl}}/books/admin/add
+Content-Type: application/json
+
+
+{
+  "isbn": "9787115999999",
+  "title": "流程测试图书",
+  "publisher": "测试出版社",
+  "publishYear": "2023-12-01",
+  "description": "用于测试完整流程的图书",
+  "authorId": 1,
+  "initialCopies": 2,
+  "location": "测试区域"
+}
+
+
+
+### 10.8 测试查询不存在的作者
+GET {{baseUrl}}/authors/99999
+
+### 10.9 测试更新不存在的作者
+PUT {{baseUrl}}/authors/admin/99999
+Content-Type: application/json
+
+
+{
+  "name": "不存在的作者",
+  "bio": "测试更新不存在的作者"
+}
+
+### 10.10 测试删除不存在的作者
+DELETE {{baseUrl}}/authors/admin/99999
+
+
+### Step 3: 查询刚添加的图书
+GET {{baseUrl}}/books/9787115999999
+
+### Step 4: 为图书添加更多副本
+POST {{baseUrl}}/bookCopies/admin/9787115999999/add
+Content-Type: application/json
+
+
+{
+  "count": 3,
+  "location": "测试区域2楼",
+  "conditionNotes": "测试副本"
+}
+
+### Step 5: 借阅图书
+POST {{baseUrl}}/borrowRecords/borrow
+Content-Type: application/json
+
+
+{
+  "isbn": "9787115999999",
+  "userId": 2,
+  "notes": "流程测试借阅"
+}
+
+### Step 6: 查看借阅记录
+GET {{baseUrl}}/borrowRecords/admin/all?current=1&size=10
+
+
+### Step 7: 归还图书
+POST {{baseUrl}}/borrowRecords/return
+Content-Type: application/json
+
+
+{
+  "borrowRecordId": 2,
+  "notes": "流程测试归还"
+}
+

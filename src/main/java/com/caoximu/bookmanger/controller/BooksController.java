@@ -17,6 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 /**
  * <p>
  * 图书表 前端控制器
@@ -37,7 +39,7 @@ public class BooksController {
     @ApiOperation("添加图书（管理员）")
     @RequireRole(UserRole.ADMIN)
     @PostMapping("/admin/add")
-    public R<Void> addBook(@RequestBody @Validated AddBookRequest request) {
+    public R<Void> addBook(@Validated @RequestBody AddBookRequest request) {
         booksService.addBook(request);
         return R.ok();
     }
@@ -47,7 +49,7 @@ public class BooksController {
     @PutMapping("/admin/{isbn}")
     public R<Void> updateBook(
             @ApiParam(value = "图书ISBN", required = true) @PathVariable String isbn,
-            @RequestBody @Validated UpdateBookRequest request) {
+            @RequestBody @Valid UpdateBookRequest request) {
         log.info("管理员更新图书请求，ISBN: {}", isbn);
         booksService.updateBook(isbn, request);
         return R.ok();

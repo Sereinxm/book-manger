@@ -1,0 +1,106 @@
+@baseUrl = http://localhost:18886/api
+@passwd=D/ual88ZF0fzFpy3U/sDq7E/tDy2z65imTyVqDpMDsf9L+jEAO03juj1Cj0PZvVHWkm3TwOq9qUTVfBmbIQNeTxNhbgI+F72+RcsxCXaZr97UkoWWlOrC/o747KYz74EslAqToj/xd/MzZDP4GsZmaUxCEC2hGSrnU/OEa3i4X3qToYmLCEAg1Aa5D8tXslP58azssmC7ERHVVD57vM/ANqxL6NZSoxlAOi5X4DtDiRWksXd+41wyd/DDTCW/1zgjeicUbuvpOSq/KEpH0jPcD2sl3zZlQ0tA9tVqC1zpB4WkVZjzBBrJxkCF2XPOjGADg7AWl85R0nmaSAz+n+PuA==
+
+# 用于存储Token，需要先执行登录接口获取
+
+###############################################################################
+# 1. 认证模块测试 (AuthController)
+###############################################################################
+
+### 1.1 用户注册
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+    "name": "测试用户",
+    "password": "{{passwd}}",
+    "email": "testuser@example.com"
+}
+
+### 1.2 普通用户登录
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "testuser@example.com",
+  "password": "{{passwd}}"
+}
+
+### 1.3 管理员登录
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@system.com",
+  "password": "{{passwd}}"
+}
+
+### 1.4 用户登出
+POST {{baseUrl}}/auth/logout
+Content-Type: application/json
+
+###
+POST {{baseUrl}}/authors/admin/add
+Content-Type: application/json
+
+
+{
+  "name": "张三",
+  "bio": "张三是一名小说家",
+  "birthDate": "1985-03-20",
+  "nationality": "中国"
+}
+
+### 1.5 作者认证 (需要管理员权限)
+POST {{baseUrl}}/auth/authorAuth
+Content-Type: application/json
+
+
+{
+  "userId": 2,
+  "authorId": 2
+}
+
+### 1.6 查看所有系统用户 (需要超级管理员权限)
+POST {{baseUrl}}/auth/users
+Content-Type: application/json
+
+
+{
+  "page": 1,
+  "pageSize": 10,
+  "name": "",
+  "email": ""
+}
+
+### 1.7 变更用户权限 (需要超级管理员权限)
+POST {{baseUrl}}/auth/updateUserRole
+Content-Type: application/json
+
+
+{
+  "userId": 1946812152052494338,
+  "role": "admin"
+}
+
+### 1.8 修改个人信息
+POST {{baseUrl}}/auth/updateProfile
+Content-Type: application/json
+
+
+{
+  "name": "新用户名"
+}
+
+### 1.9 获取Google OAuth2授权URL
+GET {{baseUrl}}/auth/google/auth-url?state=test-state
+
+
+### 1.10 Google OAuth2登录
+POST {{baseUrl}}/auth/google/login
+Content-Type: application/json
+
+{
+  "code": "google-auth-code",
+  "state": "test-state"
+}

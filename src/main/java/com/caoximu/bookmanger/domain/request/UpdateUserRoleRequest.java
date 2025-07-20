@@ -23,7 +23,4 @@ public class UpdateUserRoleRequest {
     @Schema(description = "新角色")
     @NotNull(message = "角色不能为空")
     private String role;
-    
-    @Schema(description = "是否激活账户")
-    private Boolean isActive;
 } 

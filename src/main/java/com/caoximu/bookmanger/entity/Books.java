@@ -28,10 +28,9 @@ public class Books implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * ISBN码（国际标准书号）
-     */
-    @TableId("isbn")
+    @TableId("id")
+    private String id;
+
     @ApiModelProperty("ISBN码（国际标准书号）")
     private String isbn;
 

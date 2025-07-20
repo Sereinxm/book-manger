@@ -85,7 +85,7 @@ public class BooksServiceImpl extends ServiceImpl<BooksMapper, Books> implements
         log.info("开始更新图书，ISBN: {}", isbn);
         
         // 1. 检查图书是否存在
-        Books existingBook = getById(isbn);
+        Books existingBook = booksMapper.getByIsbn(isbn);
         if (existingBook == null || Boolean.TRUE.equals(existingBook.getDeleted())) {
             throw new BizException("图书不存在，ISBN: " + isbn);
         }
@@ -119,7 +119,7 @@ public class BooksServiceImpl extends ServiceImpl<BooksMapper, Books> implements
         log.info("开始删除图书，ISBN: {}", isbn);
         
         // 1. 检查图书是否存在
-        Books book = getById(isbn);
+        Books book = booksMapper.getByIsbn(isbn);
         if (book == null || Boolean.TRUE.equals(book.getDeleted())) {
             throw new BizException("图书不存在，ISBN: " + isbn);
         }
@@ -145,7 +145,7 @@ public class BooksServiceImpl extends ServiceImpl<BooksMapper, Books> implements
 
     @Override
     public BookResponse getBookByIsbn(String isbn, boolean includeCopies) {
-        Books book = getById(isbn);
+        Books book = booksMapper.getByIsbn(isbn);
         if (book == null || Boolean.TRUE.equals(book.getDeleted())) {
             return null;
         }
