@@ -2,6 +2,7 @@ package com.caoximu.bookmanger.service.impl;
 
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.caoximu.bookmanger.domain.request.AddAuthorRequest;
@@ -9,9 +10,11 @@ import com.caoximu.bookmanger.domain.request.AuthorQueryRequest;
 import com.caoximu.bookmanger.domain.request.UpdateAuthorRequest;
 import com.caoximu.bookmanger.domain.response.AuthorResponse;
 import com.caoximu.bookmanger.entity.Authors;
+import com.caoximu.bookmanger.entity.Books;
 import com.caoximu.bookmanger.entity.Users;
 import com.caoximu.bookmanger.exception.BizException;
 import com.caoximu.bookmanger.mapper.AuthorsMapper;
+import com.caoximu.bookmanger.mapper.BooksMapper;
 import com.caoximu.bookmanger.service.IAuthorsService;
 import com.caoximu.bookmanger.service.IUsersService;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +40,7 @@ import java.util.stream.Collectors;
 public class AuthorsServiceImpl extends ServiceImpl<AuthorsMapper, Authors> implements IAuthorsService {
 
     private final IUsersService usersService;
+    private final BooksMapper booksMapper;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -139,9 +143,15 @@ public class AuthorsServiceImpl extends ServiceImpl<AuthorsMapper, Authors> impl
         if (author == null || author.getDeleted()) {
             throw new BizException("作者不存在");
         }
-        
-        // TODO: 这里可以添加检查作者是否有关联的图书，如果有则不允许删除
-        
+
+        Long l = booksMapper.selectCount(Wrappers.<Books>lambdaQuery()
+                .eq(Books::getAuthorId, authorId)
+                .eq(Books::getDeleted, false)
+        );
+        if (l > 0){
+            throw new BizException("该作者下有图书，请先删除图书");
+        }
+
         // 逻辑删除
         author.setDeleted(true);
         author.setUpdateTime(LocalDateTime.now());
