@@ -1,7 +1,8 @@
 package com.caoximu.bookmanger.domain.request;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+
+import javax.validation.constraints.NotBlank;
 
 /**
  * 注册请求

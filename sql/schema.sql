@@ -132,5 +132,13 @@ CREATE TABLE `operation_logs` (
                                   PRIMARY KEY (`id`)
 ) COMMENT='操作日志表';
 
+-- 在users表中添加Google相关字段
+ALTER TABLE users ADD COLUMN google_id VARCHAR(255) NULL;
+ALTER TABLE users ADD COLUMN avatar VARCHAR(500) NULL;
+ALTER TABLE users ADD COLUMN email_verified BOOLEAN DEFAULT FALSE;
+
+-- 为google_id添加索引
+CREATE INDEX idx_users_google_id ON users(google_id);
+
 
 

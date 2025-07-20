@@ -2,8 +2,10 @@ package com.caoximu.bookmanger.domain.request;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import jakarta.validation.constraints.NotBlank;
+
 import lombok.Data;
+
+import javax.validation.constraints.NotBlank;
 
 /**
  * Google 登录请求

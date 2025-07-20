@@ -1,6 +1,6 @@
 package com.caoximu.bookmanger.controller;
 
-import cn.dev33.satoken.stp.SaTokenInfo;
+import cn.dev33.satoken.oauth2.template.SaOAuth2Util;
 import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.caoximu.bookmanger.common.R;
@@ -14,21 +14,14 @@ import com.caoximu.bookmanger.domain.request.UpdateUserRoleRequest;
 import com.caoximu.bookmanger.domain.request.UserQueryRequest;
 import com.caoximu.bookmanger.domain.response.AuthResponse;
 import com.caoximu.bookmanger.domain.response.UserResponse;
-import com.caoximu.bookmanger.entity.Users;
 import com.caoximu.bookmanger.entity.enums.UserRole;
-import com.caoximu.bookmanger.service.IGoogleOAuth2Service;
 import com.caoximu.bookmanger.service.IUsersService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * 认证控制器
@@ -44,8 +37,6 @@ public class AuthController {
 
 
     private final IUsersService usersService;
-    private final IGoogleOAuth2Service googleOAuth2Service;
-
     @ApiOperation("用户登录")
     @PostMapping("/login")
     public R<AuthResponse> login(@RequestBody @Validated LoginRequest request) {
@@ -104,24 +95,22 @@ public class AuthController {
     }
 
     /**
-     * 获取Google OAuth2授权链接
+     * 获取Google OAuth2授权URL
      */
-    @ApiOperation("获取Google OAuth2授权链接")
+    @ApiOperation("获取Google OAuth2授权URL")
     @GetMapping("/google/auth-url")
-    public R<String> getGoogleAuthUrl(@RequestParam(value = "state", required = false) String state) {
-        String authUrl = googleOAuth2Service.getAuthorizationUrl(state);
+    public R<String> getGoogleAuthUrl(@RequestParam(required = false) String state) {
+        String authUrl = usersService.getGoogleAuthUrl(state);
         return R.ok(authUrl);
     }
 
     /**
-     * Google OAuth2登录回调
+     * Google OAuth2登录
      */
     @ApiOperation("Google OAuth2登录")
     @PostMapping("/google/login")
     public R<AuthResponse> googleLogin(@RequestBody @Validated GoogleLoginRequest request) {
-        AuthResponse authResponse = googleOAuth2Service.login(request.getCode());
-        return R.ok(authResponse);
+        return R.ok(usersService.googleLogin(request));
     }
-
 
 }

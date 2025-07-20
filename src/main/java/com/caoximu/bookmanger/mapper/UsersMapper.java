@@ -3,7 +3,6 @@ package com.caoximu.bookmanger.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.caoximu.bookmanger.entity.Users;
-import jakarta.validation.constraints.NotBlank;
 import org.apache.ibatis.annotations.Mapper;
 
 /**

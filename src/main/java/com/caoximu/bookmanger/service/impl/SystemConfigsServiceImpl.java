@@ -10,9 +10,9 @@ import com.caoximu.bookmanger.entity.enums.SystemConfigType;
 import com.caoximu.bookmanger.exception.BizException;
 import com.caoximu.bookmanger.mapper.SystemConfigsMapper;
 import com.caoximu.bookmanger.service.ISystemConfigsService;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;

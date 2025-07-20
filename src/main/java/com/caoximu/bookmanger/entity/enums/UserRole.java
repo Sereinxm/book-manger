@@ -57,11 +57,14 @@ public enum UserRole {
      * 获取角色权限级别（数值越大权限越高）
      */
     public int getLevel() {
-        return switch (this) {
-            case USER -> 1;
-            case ADMIN -> 2;
-            case SUPER_ADMIN -> 3;
-        };
+        if (this == USER){
+            return 1;
+        } else if (this == ADMIN) {
+            return 2;
+        } else if (this == SUPER_ADMIN){
+            return 3;
+        }
+        return 0;
     }
     
     /**

@@ -1,5 +1,7 @@
 server:
   port: 18886
+  servlet:
+    context-path: /api
 
 spring:
   application:
@@ -32,9 +34,9 @@ knife4j:
 # Google OAuth2 配置
 google:
   oauth2:
-    client-id: ${GOOGLE_CLIENT_ID:your-google-client-id}
-    client-secret: ${GOOGLE_CLIENT_SECRET:your-google-client-secret}
-    redirect-uri: ${GOOGLE_REDIRECT_URI:http://localhost:18886/auth/google/callback}
+    client-id: 458898756032-8n5ffbhkn2b58d7btd2na8tmqc21rvkt.apps.googleusercontent.com
+    client-secret: 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
+    redirect-uri: http://localhost:80/google-login.html
 system:
   signature-key:
     public-key: |
@@ -75,3 +77,57 @@ system:
       NUKkuDoBLvFEd9EmxFmHoHnpVaGyYDADiF5vaB0s5TAPAqaYCbnBSjP9pY/oS0wy
       j6y4qbjNloDgd07dkJt/J6LGCmjDLiSwh8vdhftC+pCE/0COhcDd
       -----END RSA PRIVATE KEY-----
+security:
+  # 排除路径
+  excludes:
+    # 静态资源
+    - /*.html
+    - /**/*.html
+    - /**/*.css
+    - /**/*.js
+    # 公共路径
+    - /favicon.ico
+    - /error
+    # swagger 文档配置
+    - /*/api-docs
+    - /*/api-docs/**
+    # actuator 监控配置
+    - /actuator
+    - /actuator/**
+    - /api/auth/login
+    - /auth/register
+    - /auth/google/login
+
+# 全局限流配置
+rate-limit:
+  # 是否启用限流
+  enabled: true
+  # 每秒允许的请求数量
+  permits-per-second: 10.0
+  # 获取令牌的超时时间（毫秒）
+  timeout-millis: 500
+  # 限流失败时的错误码
+  error-code: 429
+  # 限流失败时的错误消息
+  error-message: "请求过于频繁，请稍后再试"
+  # 排除限流的路径
+  excludes:
+    # 静态资源
+    - /*.html
+    - /**/*.html
+    - /**/*.css
+    - /**/*.js
+    - /favicon.ico
+    - /error
+    # swagger 文档
+    - /*/api-docs
+    - /*/api-docs/**
+    - /swagger-ui.html
+    - /swagger-ui/**
+    - /webjars/**
+    # actuator 监控
+    - /actuator
+    - /actuator/**
+    # 健康检查
+    - /health
+    - /ping

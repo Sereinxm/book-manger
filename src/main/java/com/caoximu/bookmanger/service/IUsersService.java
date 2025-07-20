@@ -3,6 +3,7 @@ package com.caoximu.bookmanger.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.caoximu.bookmanger.domain.request.AuthorAuthRequest;
+import com.caoximu.bookmanger.domain.request.GoogleLoginRequest;
 import com.caoximu.bookmanger.domain.request.LoginRequest;
 import com.caoximu.bookmanger.domain.request.RegisterRequest;
 import com.caoximu.bookmanger.domain.request.UpdateUserProfileRequest;
@@ -42,4 +43,20 @@ public interface IUsersService extends IService<Users> {
      * 用户更新个人信息
      */
     void updateUserProfile(UpdateUserProfileRequest request);
+
+    /**
+     * 获取Google OAuth2授权URL
+     * 
+     * @param state 状态参数，用于防止CSRF攻击
+     * @return 授权URL
+     */
+    String getGoogleAuthUrl(String state);
+
+    /**
+     * Google OAuth2登录
+     * 
+     * @param request Google登录请求
+     * @return 认证响应
+     */
+    AuthResponse googleLogin(GoogleLoginRequest request);
 }

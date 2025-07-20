@@ -1,6 +1,7 @@
 package com.caoximu.bookmanger.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.caoximu.bookmanger.entity.SystemConfigs;
 import com.caoximu.bookmanger.entity.Users;
 import com.caoximu.bookmanger.entity.enums.SystemConfigType;
@@ -116,25 +117,23 @@ public class SystemInitServiceImpl {
      */
     private void initSuperAdmin() {
         log.info("检查超级管理员账户...");
-        
-        // 检查是否存在超级管理员
-        QueryWrapper<Users> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("role", UserRole.SUPER_ADMIN.getCode())
-                   .eq("deleted", false);
-        
-        long superAdminCount = usersService.count(queryWrapper);
+
+        long superAdminCount = usersService.count(Wrappers.<Users>lambdaQuery()
+                .eq(Users::getRole, UserRole.SUPER_ADMIN.getCode())
+                .eq(Users::getIsActive, true)
+        );
         
         if (superAdminCount == 0) {
             log.info("未找到超级管理员账户，开始创建默认超级管理员...");
             
             String adminPassword = createSuperAdmin();
             
-            log.warn("=".repeat(60));
+            log.warn("=======================");
             log.warn("重要提醒：默认超级管理员账户已创建");
             log.warn("账户邮箱: admin@system.com");
             log.warn("初始密码: {}", adminPassword);
             log.warn("请妥善保管此密码，并在首次登录后立即修改!");
-            log.warn("=".repeat(60));
+            log.warn("==========================");
         } else {
             log.info("超级管理员账户已存在，跳过创建");
         }
@@ -145,17 +144,19 @@ public class SystemInitServiceImpl {
      */
     private String createSuperAdmin() {
         // 生成随机密码
-        String randomPassword = PasswordUtil.generateRandomPassword(12);
-        String encodedPassword = PasswordUtil.encodePassword(randomPassword);
+//        String randomPassword = PasswordUtil.generateRandomPassword(12);
+        String randomPassword = "123456";
         
         LocalDateTime now = LocalDateTime.now();
-        
+        String salt = "admin";
+        String password = PasswordUtil.encryptPwd(salt, randomPassword);
         Users superAdmin = new Users();
         superAdmin.setName("系统管理员");
         superAdmin.setEmail("admin@system.com");
-        superAdmin.setPassword(encodedPassword);
+        superAdmin.setPassword(password);
         superAdmin.setRole(UserRole.SUPER_ADMIN.getCode());
         superAdmin.setJoinDate(now);
+        superAdmin.setSalt(salt);
         usersService.save(superAdmin);
         
         log.info("默认超级管理员账户创建完成");

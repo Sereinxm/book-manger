@@ -1,0 +1,550 @@
+@baseUrl = http://localhost:18886/api
+@passwd=D/ual88ZF0fzFpy3U/sDq7E/tDy2z65imTyVqDpMDsf9L+jEAO03juj1Cj0PZvVHWkm3TwOq9qUTVfBmbIQNeTxNhbgI+F72+RcsxCXaZr97UkoWWlOrC/o747KYz74EslAqToj/xd/MzZDP4GsZmaUxCEC2hGSrnU/OEa3i4X3qToYmLCEAg1Aa5D8tXslP58azssmC7ERHVVD57vM/ANqxL6NZSoxlAOi5X4DtDiRWksXd+41wyd/DDTCW/1zgjeicUbuvpOSq/KEpH0jPcD2sl3zZlQ0tA9tVqC1zpB4WkVZjzBBrJxkCF2XPOjGADg7AWl85R0nmaSAz+n+PuA==
+
+# 用于存储Token，需要先执行登录接口获取
+@token = 
+
+###############################################################################
+# 1. 认证模块测试 (AuthController)
+###############################################################################
+
+### 1.1 用户注册
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+    "name": "测试用户",
+    "password": "{{passwd}}",
+    "email": "testuser@example.com"
+}
+
+### 1.2 普通用户登录
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "testuser@example.com",
+  "password": "{{passwd}}"
+}
+
+### 1.3 管理员登录
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@system.com",
+  "password": "{{passwd}}"
+}
+
+### 1.4 用户登出
+POST {{baseUrl}}/auth/logout
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+### 1.5 作者认证 (需要管理员权限)
+POST {{baseUrl}}/auth/authorAuth
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "userId": 2,
+  "authorName": "张三",
+  "bio": "知名作家，专注于文学创作"
+}
+
+### 1.6 查看所有系统用户 (需要超级管理员权限)
+POST {{baseUrl}}/auth/users
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "page": 1,
+  "pageSize": 10,
+  "name": "",
+  "email": ""
+}
+
+### 1.7 变更用户权限 (需要超级管理员权限)
+POST {{baseUrl}}/auth/updateUserRole
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "userId": 2,
+  "newRole": "AUTHOR"
+}
+
+### 1.8 修改个人信息
+POST {{baseUrl}}/auth/updateProfile
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "新用户名",
+  "email": "newemail@example.com"
+}
+
+### 1.9 获取Google OAuth2授权URL
+GET {{baseUrl}}/auth/google/auth-url?state=test-state
+Authorization: Bearer {{token}}
+
+### 1.10 Google OAuth2登录
+POST {{baseUrl}}/auth/google/login
+Content-Type: application/json
+
+{
+  "code": "google-auth-code",
+  "state": "test-state"
+}
+
+###############################################################################
+# 2. 作者管理测试 (AuthorsController)
+###############################################################################
+
+### 2.1 添加作者 (需要管理员权限)
+POST {{baseUrl}}/authors/admin/add
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "张三",
+  "bio": "知名作家，专注于现代文学创作，代表作品有《春天的故事》等",
+  "birthDate": "1980-05-15",
+  "nationality": "中国"
+}
+
+### 2.2 更新作者信息 (需要管理员权限)
+PUT {{baseUrl}}/authors/admin/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "张三(更新)",
+  "bio": "知名作家，专注于现代文学创作，代表作品有《春天的故事》、《夏日回忆》等",
+  "birthDate": "1980-05-15",
+  "nationality": "中国"
+}
+
+### 2.3 删除作者 (需要管理员权限)
+DELETE {{baseUrl}}/authors/admin/1
+Authorization: Bearer {{token}}
+
+### 2.4 根据ID获取作者详情
+GET {{baseUrl}}/authors/1
+
+### 2.5 分页查询作者 - 无条件查询
+GET {{baseUrl}}/authors/search?current=1&size=10
+
+### 2.6 分页查询作者 - 按姓名模糊查询
+GET {{baseUrl}}/authors/search?name=张&current=1&size=5
+
+### 2.7 分页查询作者 - 按国籍查询
+GET {{baseUrl}}/authors/search?nationality=中国&current=1&size=10
+
+### 2.8 获取所有作者列表 - 基础查询
+GET {{baseUrl}}/authors/list?current=1&size=50
+
+### 2.9 获取所有作者列表 - 按姓名查询
+GET {{baseUrl}}/authors/list?current=1&size=20&name=张三
+
+### 2.10 测试添加重复作者
+POST {{baseUrl}}/authors/admin/add
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "张三",
+  "bio": "测试重复作者",
+  "birthDate": "1980-05-15",
+  "nationality": "中国"
+}
+
+### 2.11 测试参数校验 - 缺少必填字段
+POST {{baseUrl}}/authors/admin/add
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "bio": "缺少姓名的作者"
+}
+
+### 2.12 测试查询不存在的作者
+GET {{baseUrl}}/authors/99999
+
+###############################################################################
+# 3. 图书管理测试 (BooksController)
+###############################################################################
+
+### 3.1 添加图书 (需要管理员权限)
+POST {{baseUrl}}/books/admin/add
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "isbn": "9787115123456",
+  "title": "Java编程思想",
+  "publisher": "人民邮电出版社",
+  "publishYear": "2022-01-01",
+  "description": "Java编程经典教材，适合初学者和进阶开发者",
+  "authorId": 1,
+  "initialCopies": 5,
+  "location": "A区1楼"
+}
+
+### 3.2 更新图书信息 (需要管理员权限)
+PUT {{baseUrl}}/books/admin/9787115123456
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "Java编程思想(第五版)",
+  "publisher": "人民邮电出版社",
+  "publishYear": "2023-01-01",
+  "description": "Java编程经典教材最新版本"
+}
+
+### 3.3 删除图书 (需要管理员权限)
+DELETE {{baseUrl}}/books/admin/9787115123456
+Authorization: Bearer {{token}}
+
+### 3.4 根据ISBN获取图书详情
+GET {{baseUrl}}/books/9787115123456?includeCopies=true
+
+### 3.5 分页查询图书 - 无条件查询
+GET {{baseUrl}}/books/search?current=1&size=10
+
+### 3.6 分页查询图书 - 按书名查询
+GET {{baseUrl}}/books/search?title=Java&current=1&size=5
+
+### 3.7 分页查询图书 - 按ISBN精确查询
+GET {{baseUrl}}/books/search?isbn=9787115123456&current=1&size=10
+
+### 3.8 分页查询图书 - 按出版社查询
+GET {{baseUrl}}/books/search?publisher=人民邮电&current=1&size=10
+
+### 3.9 分页查询图书 - 按作者查询
+GET {{baseUrl}}/books/search?authorName=张三&current=1&size=10
+
+###############################################################################
+# 4. 图书副本管理测试 (BookCopiesController)
+###############################################################################
+
+### 4.1 为图书添加副本 (需要管理员权限)
+POST {{baseUrl}}/bookCopies/admin/9787115123456/add
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "count": 3,
+  "location": "B区2楼",
+  "conditionNotes": "全新图书，状态良好"
+}
+
+### 4.2 更新副本信息 (需要管理员权限)
+PUT {{baseUrl}}/bookCopies/admin/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "status": "DAMAGED"
+}
+
+### 4.3 根据ISBN获取所有副本
+GET {{baseUrl}}/bookCopies/isbn/9787115123456
+
+###############################################################################
+# 5. 借阅记录管理测试 (BorrowRecordsController)
+###############################################################################
+
+### 5.1 借阅图书 (需要管理员权限)
+POST {{baseUrl}}/borrowRecords/borrow
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "isbn": "9787115123456",
+  "userId": 2,
+  "notes": "学习用书"
+}
+
+### 5.2 归还图书 (需要管理员权限)
+POST {{baseUrl}}/borrowRecords/return
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "borrowId": 1,
+  "notes": "图书状态良好"
+}
+
+### 5.3 获取当前用户借阅记录
+GET {{baseUrl}}/borrowRecords/my?current=1&size=10
+Authorization: Bearer {{token}}
+
+### 5.4 获取当前用户指定状态的借阅记录
+GET {{baseUrl}}/borrowRecords/my?current=1&size=10&status=active
+Authorization: Bearer {{token}}
+
+### 5.5 获取所有借阅记录 (需要管理员权限)
+GET {{baseUrl}}/borrowRecords/admin/all?current=1&size=10
+Authorization: Bearer {{token}}
+
+### 5.6 获取指定用户的借阅记录 (需要管理员权限)
+GET {{baseUrl}}/borrowRecords/admin/all?current=1&size=10&userId=2
+Authorization: Bearer {{token}}
+
+### 5.7 获取指定状态的借阅记录 (需要管理员权限)
+GET {{baseUrl}}/borrowRecords/admin/all?current=1&size=10&status=returned
+Authorization: Bearer {{token}}
+
+### 5.8 获取作者图书借阅统计 (需要作者权限)
+GET {{baseUrl}}/borrowRecords/author/statistics
+Authorization: Bearer {{token}}
+
+###############################################################################
+# 6. 系统配置管理测试 (SystemConfigsController)
+###############################################################################
+
+### 6.1 获取系统所有配置参数 (需要管理员权限)
+GET {{baseUrl}}/systemConfigs/list
+Authorization: Bearer {{token}}
+
+### 6.2 修改系统配置参数 (需要管理员权限)
+PUT {{baseUrl}}/systemConfigs/update
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "configKey": "MAX_BORROW_DAYS",
+  "configValue": "30"
+}
+
+###############################################################################
+# 7. 限流测试 (LimitController)
+###############################################################################
+
+### 7.1 测试局部限流
+GET {{baseUrl}}/limit/test-local
+
+### 7.2 测试全局限流
+GET {{baseUrl}}/limit/test-global
+
+### 7.3 获取限流配置信息
+GET {{baseUrl}}/limit/config
+
+### 7.4 压力测试接口
+GET {{baseUrl}}/limit/stress-test
+
+###############################################################################
+# 8. 压力测试场景
+###############################################################################
+
+### 8.1 连续5次调用局部限流测试 (用于测试限流效果)
+GET {{baseUrl}}/limit/test-local
+
+###
+GET {{baseUrl}}/limit/test-local
+
+###
+GET {{baseUrl}}/limit/test-local
+
+###
+GET {{baseUrl}}/limit/test-local
+
+###
+GET {{baseUrl}}/limit/test-local
+
+### 8.2 连续多次调用全局限流测试
+GET {{baseUrl}}/limit/test-global
+
+###
+GET {{baseUrl}}/limit/test-global
+
+###
+GET {{baseUrl}}/limit/test-global
+
+###############################################################################
+# 9. 业务流程测试场景
+###############################################################################
+
+### 9.1 完整的图书管理流程测试
+# Step 1: 管理员登录
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@system.com",
+  "password": "{{passwd}}"
+}
+
+### Step 2: 添加图书
+POST {{baseUrl}}/books/admin/add
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "isbn": "9787115999999",
+  "title": "流程测试图书",
+  "publisher": "测试出版社",
+  "publishYear": "2023-12-01",
+  "description": "用于测试完整流程的图书",
+  "authorId": 1,
+  "initialCopies": 2,
+  "location": "测试区域"
+}
+
+### 10.6 测试添加作者时未授权访问
+POST {{baseUrl}}/authors/admin/add
+Content-Type: application/json
+
+{
+  "name": "未授权作者",
+  "bio": "测试未授权访问"
+}
+
+### 10.7 测试添加作者参数校验 - 缺少姓名
+POST {{baseUrl}}/authors/admin/add
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "bio": "缺少姓名的作者"
+}
+
+### 10.8 测试查询不存在的作者
+GET {{baseUrl}}/authors/99999
+
+### 10.9 测试更新不存在的作者
+PUT {{baseUrl}}/authors/admin/99999
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "不存在的作者",
+  "bio": "测试更新不存在的作者"
+}
+
+### 10.10 测试删除不存在的作者
+DELETE {{baseUrl}}/authors/admin/99999
+Authorization: Bearer {{token}}
+
+### Step 3: 查询刚添加的图书
+GET {{baseUrl}}/books/9787115999999
+
+### Step 4: 为图书添加更多副本
+POST {{baseUrl}}/bookCopies/admin/9787115999999/add
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "count": 3,
+  "location": "测试区域2楼",
+  "conditionNotes": "测试副本"
+}
+
+### Step 5: 借阅图书
+POST {{baseUrl}}/borrowRecords/borrow
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "isbn": "9787115999999",
+  "userId": 2,
+  "notes": "流程测试借阅"
+}
+
+### Step 6: 查看借阅记录
+GET {{baseUrl}}/borrowRecords/admin/all?current=1&size=10
+Authorization: Bearer {{token}}
+
+### Step 7: 归还图书
+POST {{baseUrl}}/borrowRecords/return
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "borrowId": 1,
+  "notes": "流程测试归还"
+}
+
+### 9.2 完整的作者管理流程测试
+# Step 1: 管理员登录
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@system.com",
+  "password": "{{passwd}}"
+}
+
+### Step 2: 添加作者
+POST {{baseUrl}}/authors/admin/add
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "流程测试作者",
+  "bio": "用于测试完整流程的作者",
+  "birthDate": "1985-03-20",
+  "nationality": "中国"
+}
+
+### Step 3: 查询刚添加的作者
+GET {{baseUrl}}/authors/search?name=流程测试作者&current=1&size=10
+
+### Step 4: 更新作者信息
+PUT {{baseUrl}}/authors/admin/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "流程测试作者(已更新)",
+  "bio": "用于测试完整流程的作者，已更新信息",
+  "birthDate": "1985-03-20",
+  "nationality": "中国"
+}
+
+### Step 5: 获取作者详情
+GET {{baseUrl}}/authors/1
+
+### Step 6: 获取所有作者列表
+GET {{baseUrl}}/authors/list?current=1&size=50
+
+###############################################################################
+# 10. 错误场景测试
+###############################################################################
+
+### 10.1 测试未授权访问
+GET {{baseUrl}}/systemConfigs/list
+
+### 10.2 测试无效Token
+GET {{baseUrl}}/systemConfigs/list
+Authorization: Bearer invalid-token
+
+### 10.3 测试参数校验 - 添加图书时缺少必填字段
+POST {{baseUrl}}/books/admin/add
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "缺少ISBN的图书"
+}
+
+### 10.4 测试不存在的资源 - 查询不存在的图书
+GET {{baseUrl}}/books/9999999999999
+
+### 10.5 测试重复添加图书 (相同ISBN)
+POST {{baseUrl}}/books/admin/add
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "isbn": "9787115123456",
+  "title": "重复ISBN图书",
+  "publisher": "测试出版社",
+  "publishYear": "2023-01-01",
+  "description": "测试重复ISBN",
+  "authorId": 1,
+  "initialCopies": 1,
+  "location": "测试区域"
+}

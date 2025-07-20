@@ -14,13 +14,13 @@ import com.caoximu.bookmanger.entity.enums.SystemConfigType;
 import com.caoximu.bookmanger.exception.BizException;
 import com.caoximu.bookmanger.mapper.BorrowRecordsMapper;
 import com.caoximu.bookmanger.service.*;
-import com.caoximu.bookmanger.utils.LoginHelper;
-import jakarta.annotation.Resource;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;

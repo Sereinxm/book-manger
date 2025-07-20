@@ -9,11 +9,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.caoximu.bookmanger.config.properties.CustomProperties;
 import com.caoximu.bookmanger.domain.request.AuthorAuthRequest;
+import com.caoximu.bookmanger.domain.request.GoogleLoginRequest;
 import com.caoximu.bookmanger.domain.request.LoginRequest;
 import com.caoximu.bookmanger.domain.request.RegisterRequest;
 import com.caoximu.bookmanger.domain.request.UpdateUserProfileRequest;
 import com.caoximu.bookmanger.domain.request.UpdateUserRoleRequest;
 import com.caoximu.bookmanger.domain.request.UserQueryRequest;
+import com.caoximu.bookmanger.domain.dto.GoogleUserInfoDto;
 import com.caoximu.bookmanger.domain.response.AuthResponse;
 import com.caoximu.bookmanger.domain.response.UserResponse;
 import com.caoximu.bookmanger.entity.Authors;
@@ -22,6 +24,7 @@ import com.caoximu.bookmanger.entity.enums.UserRole;
 import com.caoximu.bookmanger.exception.BizException;
 import com.caoximu.bookmanger.mapper.AuthorsMapper;
 import com.caoximu.bookmanger.mapper.UsersMapper;
+import com.caoximu.bookmanger.service.GoogleOAuth2Service;
 import com.caoximu.bookmanger.service.IUsersService;
 import com.caoximu.bookmanger.utils.LoginHelper;
 import com.caoximu.bookmanger.utils.PasswordUtil;
@@ -49,6 +52,7 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
     private final UsersMapper usersMapper;
     private final AuthorsMapper authorsMapper;
     private final CustomProperties customProperties;
+    private final GoogleOAuth2Service googleOAuth2Service;
     
     @Override
     public AuthResponse login(LoginRequest request) {
@@ -60,7 +64,7 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
         }
         StpUtil.login(appUser.getId());
         AuthResponse resp = new AuthResponse();
-        resp.setAccessToken(StpUtil.getTokenName());
+        resp.setAccessToken(StpUtil.getTokenValue());
         resp.setExpireIn(StpUtil.getTokenTimeout());
         return resp;
     }
@@ -90,7 +94,7 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
         //进行用户登录
         StpUtil.login(user.getId());
         AuthResponse resp = new AuthResponse();
-        resp.setAccessToken(StpUtil.getTokenName());
+        resp.setAccessToken(StpUtil.getTokenValue());
         resp.setExpireIn(StpUtil.getTokenTimeout());
         return resp;
     }
@@ -201,5 +205,100 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
         UserResponse response = new UserResponse();
         BeanUtils.copyProperties(user, response);
         return response;
+    }
+
+    @Override
+    public String getGoogleAuthUrl(String state) {
+        log.info("获取Google OAuth2授权URL, state: {}", state);
+        return googleOAuth2Service.buildAuthorizationUrl(state);
+    }
+
+    @Override
+    public AuthResponse googleLogin(GoogleLoginRequest request) {
+        log.info("执行Google OAuth2登录");
+        
+        try {
+            // 1. 使用授权码获取Google用户信息
+            GoogleUserInfoDto googleUserInfo = googleOAuth2Service.authenticateWithGoogle(request.getCode());
+            
+            // 2. 查找或创建用户
+            Users user = findOrCreateUserFromGoogle(googleUserInfo);
+            
+            // 3. 检查用户状态
+            checkAppUser(user);
+            
+            // 4. 执行登录
+            StpUtil.login(user.getId());
+            
+            // 5. 返回认证响应
+            AuthResponse response = new AuthResponse();
+            response.setAccessToken(StpUtil.getTokenValue());
+            response.setExpireIn(StpUtil.getTokenTimeout());
+            
+            log.info("Google登录成功，用户ID: {}, 邮箱: {}", user.getId(), user.getEmail());
+            return response;
+            
+        } catch (Exception e) {
+            log.error("Google登录失败", e);
+            if (e instanceof BizException) {
+                throw e;
+            }
+            throw new BizException("Google登录失败: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 根据Google用户信息查找或创建用户
+     */
+    private Users findOrCreateUserFromGoogle(GoogleUserInfoDto googleUserInfo) {
+        // 1. 尝试通过Google ID查找用户
+        Users existingUser = usersMapper.selectOne(
+            new LambdaQueryWrapper<Users>()
+                .eq(Users::getGoogleId, googleUserInfo.getId())
+                .eq(Users::getIsActive, true)
+        );
+        
+        if (existingUser != null) {
+            // 更新用户名（如果Google信息有变化）
+            if (!Objects.equals(existingUser.getName(), googleUserInfo.getName())) {
+                existingUser.setName(googleUserInfo.getName());
+                updateById(existingUser);
+            }
+            return existingUser;
+        }
+        
+        // 2. 尝试通过邮箱查找用户（用于绑定现有账号）
+        Users userByEmail = usersMapper.selectOne(
+            new LambdaQueryWrapper<Users>()
+                .eq(Users::getEmail, googleUserInfo.getEmail())
+        );
+        
+        if (userByEmail != null) {
+            if (!userByEmail.getIsActive()) {
+                throw new BizException("账号已被冻结，请联系管理员");
+            }
+            
+            // 绑定Google ID到现有账号
+            userByEmail.setGoogleId(googleUserInfo.getId());
+            userByEmail.setName(googleUserInfo.getName()); // 更新姓名
+            updateById(userByEmail);
+            
+            log.info("成功绑定Google账号到现有用户，邮箱: {}", googleUserInfo.getEmail());
+            return userByEmail;
+        }
+        
+        // 3. 创建新用户
+        Users newUser = new Users();
+        newUser.setName(googleUserInfo.getName());
+        newUser.setEmail(googleUserInfo.getEmail());
+        newUser.setGoogleId(googleUserInfo.getId());
+        newUser.setRole(UserRole.USER.getCode()); // 默认为普通用户
+        newUser.setIsActive(true);
+        // Google登录不设置密码和盐值
+        
+        save(newUser);
+        
+        log.info("成功创建Google用户，邮箱: {}", googleUserInfo.getEmail());
+        return newUser;
     }
 }

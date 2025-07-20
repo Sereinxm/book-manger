@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图书管理系统 - Google登录</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .google-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+            margin-bottom: 1rem;
+            width: 100%;
+        }
+
+        .google-btn:hover {
+            background: #3367d6;
+        }
+
+        .google-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .google-icon {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+        }
+
+        .status-message {
+            margin-top: 1rem;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .loading {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .user-info {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 5px;
+            text-align: left;
+        }
+
+        .user-info h3 {
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .user-info p {
+            margin: 0.25rem 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            margin-top: 0.5rem;
+        }
+
+        .logout-btn:hover {
+            background: #c82333;
+        }
+
+        .divider {
+            margin: 1.5rem 0;
+            position: relative;
+            text-align: center;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #ddd;
+        }
+
+        .divider span {
+            background: white;
+            padding: 0 1rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .config-note {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            color: #856404;
+            text-align: left;
+        }
+
+        .config-note h4 {
+            margin-bottom: 0.5rem;
+            color: #d63031;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">📚 图书管理系统</div>
+        <div class="subtitle">使用Google账号快速登录</div>
+
+        <!-- 登录状态显示 -->
+        <div id="loginSection">
+            <button id="googleLoginBtn" class="google-btn">
+                <svg class="google-icon" viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                使用Google登录
+            </button>
+        </div>
+
+        <!-- 用户信息显示 -->
+        <div id="userInfoSection" style="display: none;">
+            <div class="user-info">
+                <h3>登录成功！</h3>
+                <p><strong>访问令牌:</strong> <span id="accessToken"></span></p>
+                <p><strong>令牌有效期:</strong> <span id="expireIn"></span> 秒</p>
+                <button id="logoutBtn" class="logout-btn">退出登录</button>
+            </div>
+        </div>
+
+        <!-- 状态消息 -->
+        <div id="statusMessage"></div>
+    </div>
+
+    <script>
+        // 配置
+        const CONFIG = {
+            API_BASE_URL: 'http://localhost:18886/api',
+            STORAGE_KEY: 'book_manager_auth'
+        };
+
+        // DOM元素
+        const elements = {
+            googleLoginBtn: document.getElementById('googleLoginBtn'),
+            loginSection: document.getElementById('loginSection'),
+            userInfoSection: document.getElementById('userInfoSection'),
+            statusMessage: document.getElementById('statusMessage'),
+            accessToken: document.getElementById('accessToken'),
+            expireIn: document.getElementById('expireIn'),
+            logoutBtn: document.getElementById('logoutBtn')
+        };
+
+        // 工具函数
+        function showMessage(message, type = 'loading') {
+            elements.statusMessage.innerHTML = `<div class="status-message ${type}">${message}</div>`;
+        }
+
+        function hideMessage() {
+            elements.statusMessage.innerHTML = '';
+        }
+
+        function generateState() {
+            return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        }
+
+        function saveAuthData(authData) {
+            const data = {
+                ...authData,
+                loginTime: Date.now()
+            };
+            localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(data));
+        }
+
+        function getAuthData() {
+            const data = localStorage.getItem(CONFIG.STORAGE_KEY);
+            return data ? JSON.parse(data) : null;
+        }
+
+        function clearAuthData() {
+            localStorage.removeItem(CONFIG.STORAGE_KEY);
+        }
+
+        function isTokenExpired(authData) {
+            if (!authData || !authData.expireIn || !authData.loginTime) {
+                return true;
+            }
+            const now = Date.now();
+            const expireTime = authData.loginTime + (authData.expireIn * 1000);
+            return now >= expireTime;
+        }
+
+        // API调用函数
+        async function apiCall(endpoint, options = {}) {
+            const url = `${CONFIG.API_BASE_URL}${endpoint}`;
+            const defaultOptions = {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            };
+
+            const mergedOptions = { ...defaultOptions, ...options };
+
+            try {
+                const response = await fetch(url, mergedOptions);
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || `HTTP error! status: ${response.status}`);
+                }
+
+                if (data.code !== 200) {
+                    throw new Error(data.message || '请求失败');
+                }
+
+                return data.data;
+            } catch (error) {
+                console.error('API调用失败:', error);
+                throw error;
+            }
+        }
+
+        // 获取Google授权URL
+        async function getGoogleAuthUrl() {
+            try {
+                showMessage('正在获取授权链接...', 'loading');
+                elements.googleLoginBtn.disabled = true;
+
+                const state = generateState();
+                sessionStorage.setItem('oauth_state', state);
+
+                const authUrl = await apiCall(`/auth/google/auth-url?state=${encodeURIComponent(state)}`);
+                
+                hideMessage();
+                // 重定向到Google授权页面
+                window.location.href = authUrl;
+            } catch (error) {
+                showMessage(`获取授权链接失败: ${error.message}`, 'error');
+                elements.googleLoginBtn.disabled = false;
+            }
+        }
+
+        // 处理Google登录
+        async function handleGoogleLogin(code, state) {
+            try {
+                showMessage('正在处理Google登录...', 'loading');
+
+                // 验证state参数（防CSRF攻击）
+                const savedState = sessionStorage.getItem('oauth_state');
+                if (state !== savedState) {
+                    throw new Error('状态参数验证失败，可能存在安全风险');
+                }
+
+                const authData = await apiCall('/auth/google/login', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        code: code,
+                        state: state
+                    })
+                });
+
+                // 保存认证数据
+                saveAuthData(authData);
+
+                // 显示用户信息
+                showUserInfo(authData);
+                showMessage('Google登录成功！', 'success');
+
+                // 清除session中的state
+                sessionStorage.removeItem('oauth_state');
+
+                // 清除URL中的参数
+                const newUrl = window.location.origin + window.location.pathname;
+                window.history.replaceState({}, document.title, newUrl);
+
+            } catch (error) {
+                showMessage(`Google登录失败: ${error.message}`, 'error');
+                showLoginSection();
+            }
+        }
+
+        // 显示用户信息
+        function showUserInfo(authData) {
+            elements.accessToken.textContent = authData.accessToken.substring(0, 20) + '...';
+            elements.expireIn.textContent = authData.expireIn;
+
+            elements.loginSection.style.display = 'none';
+            elements.userInfoSection.style.display = 'block';
+        }
+
+        // 显示登录界面
+        function showLoginSection() {
+            elements.loginSection.style.display = 'block';
+            elements.userInfoSection.style.display = 'none';
+            elements.googleLoginBtn.disabled = false;
+        }
+
+        // 退出登录
+        function logout() {
+            clearAuthData();
+            showLoginSection();
+            hideMessage();
+            showMessage('已退出登录', 'success');
+            setTimeout(hideMessage, 2000);
+        }
+
+        // 检查当前登录状态
+        function checkLoginStatus() {
+            const authData = getAuthData();
+            
+            if (authData && !isTokenExpired(authData)) {
+                showUserInfo(authData);
+                showMessage('您已登录', 'success');
+                setTimeout(hideMessage, 2000);
+            } else {
+                if (authData) {
+                    clearAuthData();
+                    showMessage('登录已过期，请重新登录', 'error');
+                    setTimeout(hideMessage, 3000);
+                }
+                showLoginSection();
+            }
+        }
+
+        // 解析URL参数
+        function getUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                code: params.get('code'),
+                state: params.get('state'),
+                error: params.get('error'),
+                error_description: params.get('error_description')
+            };
+        }
+
+        // 事件监听器
+        elements.googleLoginBtn.addEventListener('click', getGoogleAuthUrl);
+        elements.logoutBtn.addEventListener('click', logout);
+
+        // 页面加载时的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = getUrlParams();
+
+            // 检查是否是Google OAuth回调
+            if (urlParams.code) {
+                if (urlParams.error) {
+                    showMessage(`Google授权失败: ${urlParams.error_description || urlParams.error}`, 'error');
+                    showLoginSection();
+                } else {
+                    handleGoogleLogin(urlParams.code, urlParams.state);
+                }
+            } else {
+                // 检查已有的登录状态
+                checkLoginStatus();
+            }
+        });
+
+        // 开发模式下的调试信息
+        if (window.location.hostname === 'localhost') {
+            console.log('图书管理系统 - Google登录页面');
+            console.log('API地址:', CONFIG.API_BASE_URL);
+            console.log('当前页面用于开发测试，生产环境请修改相应配置');
+        }
+    </script>
+</body>
+</html> 
