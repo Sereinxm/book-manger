@@ -34,8 +34,8 @@ knife4j:
 # Google OAuth2 配置
 google:
   oauth2:
-    client-id: aaaa
-    client-secret: aaa
+    client-id: ${ client }
+    client-secret: ${secret}
     redirect-uri: http://localhost:80/google-login.html
 system:
   signature-key:
