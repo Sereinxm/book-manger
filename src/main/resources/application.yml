@@ -34,8 +34,8 @@ knife4j:
 
 google:
   oauth2:
-    client-id: ${client}
-    client-secret: ${secret}
+    client-id: 458898756032-8n5ffbhkn2b58d7btd2na8tmqc21rvkt.apps.googleusercontent.com
+    client-secret: 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
     redirect-uri: http://localhost:80/google-login.html
 system:
   signature-key:
