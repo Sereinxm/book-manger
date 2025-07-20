@@ -34,8 +34,8 @@ knife4j:
 # Google OAuth2 配置
 google:
   oauth2:
-    client-id: ${GOOGLE_OAUTH_CLIENT_ID:your_client_id}
-    client-secret: ${GOOGLE_OAUTH_CLIENT_SECRET:your_client_secret}
+    client-id: 458898756032-8n5ffbhkn2b58d7btd2na8tmqc21rvkt.apps.googleusercontent.com
+    client-secret: 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
     redirect-uri: http://localhost:80/google-login.html
 system:
   signature-key:
@@ -125,6 +125,8 @@ rate-limit:
     - /swagger-ui.html
     - /swagger-ui/**
     - /webjars/**
+    - /api/v2/api-docs
+    - /api/swagger-resources
     # actuator 监控
     - /actuator
     - /actuator/**
